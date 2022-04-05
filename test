@@ -1,1835 +1,1820 @@
-openapi: "3.0.3"
-
-info:
-  title: CorPro API
-  version: "1.0.0"
-  termsOfService: "https://developer.alterdomus.com/corpro/terms"
-  contact:
-    name: "Alter Domus CorPro API"
-    url: "https://developer.alterdomus.com/corpro"
-    email: "corpro.support@alterdomus.com"
-
-servers:
-  - url: https://app-dev-corpro-api-openapi-02.azurewebsites.net
-    description: Backend
-
-  - url: https://apidev.eu.alterdomus.com/corpro
-    description: CorPro Europe (TLS)
-
-  - url: https://apidev.us.alterdomus.com/corpro
-    description: CorPro North America (TLS)
-
-  - url: https://secure-apidev.eu.alterdomus.com/corpro
-    description: CorPro Europe (mTLS)
-    
-  - url: https://secure-apidev.us.alterdomus.com/corpro
-    description: CorPro North America (mTLS)
-
-# Entity Summary = Default Get for Entity
-# Entity Header = Default basic profile of Entity
-
-security:
-  - oAuth2ClientCredentials: []
-
-paths:
-
-###########################
-# FUND API
-###########################
-
-  /funds:
-    get:
-      operationId: GetFunds
-      summary: Get Funds
-      description: Get the collection of funds related to the user
-      tags: ['fund']
-      parameters:
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/offset'
-        - name: name
-          in: query
-          schema:
-            type: string
-            nullable: true
-          description: fund name filter using a SQL LIKE match (case insensitive)
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getFundsResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /funds/{fundId}:
-    get:
-      operationId: GetFund
-      summary: Get Fund
-      description: Get the fund summary by the fund id
-      tags: ['fund']
-      parameters:
-        - $ref: '#/components/parameters/fundId'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-               schema:
-                $ref: '#/components/schemas/getFundResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /funds/{fundId}/profile:
-    get:
-      operationId: GetFundProfile
-      summary: Get Fund Profile
-      description: Get the fund profile by the fund id
-      tags: ['fund']
-      parameters:
-        - $ref: '#/components/parameters/fundId'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-               schema:
-                $ref: '#/components/schemas/getFundProfileResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /funds/{fundId}/balance:
-    get:
-      operationId: GetFundBalance
-      summary: Get Fund Balance
-      description: Get the fund balance at a given date. If the date is not provided then the most recent fund balance is returned.
-      tags: ['fund']
-      parameters:
-        - $ref: '#/components/parameters/fundId'
-        - $ref: '#/components/parameters/asOfDate'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-               schema:
-                 $ref: '#/components/schemas/getFundBalanceResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /funds/{fundId}/investors:
-    get:
-      operationId: GetFundInvestors
-      summary: Get Fund Investors
-      description: Get the investors associated with the fund
-      tags: ['fund']
-      parameters:
-        - $ref: '#/components/parameters/fundId'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/offset'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-             schema:
-                $ref: '#/components/schemas/getFundInvestorsResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  # /funds/{fundId}/contacts/fundmanagers:
-  #   get:
-  #     operationId: "GetFundManagers"
-  #     summary: "Get Fund Managers"
-  #     description: Get the users with a role of fund manager from the fund
-  #     tags: ['fund']
-  #     parameters:
-  #       - $ref: '#/components/parameters/fundId'
-  #       - $ref: '#/components/parameters/limit'
-  #       - $ref: '#/components/parameters/offset'
-  #       - $ref: '#/components/parameters/asOfDate' 
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #            schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/collectionMetadata'
-  #                 data: 
-  #                   type: array
-  #                   items:
-  #                     $ref: '#/components/schemas/contactSummary'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  # /funds/{fundId}/contacts/investors:
-  #   get:
-  #     operationId: "GetFundInvestors"
-  #     summary: "Get Fund Investors"
-  #     description: Get the users with a role of investor from the fund
-  #     tags: ['fund']
-  #     parameters:
-  #       - $ref: '#/components/parameters/fundId'
-  #       - $ref: '#/components/parameters/limit'
-  #       - $ref: '#/components/parameters/offset'
-  #       - $ref: '#/components/parameters/asOfDate' 
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #            schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/collectionMetadata'
-  #                 data: 
-  #                   type: array
-  #                   items:
-  #                     $ref: '#/components/schemas/contactSummary'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-###########################
-# INVESTOR API
-###########################
-
-# NOTE Complex and potentially slow
-  /investors:
-    get:
-      operationId: GetInvestors
-      summary: Get Investors
-      description: Returns the investors related to the API client
-      tags: ['investor']
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/offset'
-      - name: name
-        in: query
-        schema:
-          type: string
-          nullable: true
-          description: Investor name filter using a SQL LIKE match 
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getInvestorsResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /investors/{investorId}:
-    get:
-      operationId: GetInvestor
-      summary: Get the summary information from an investor account 
-      description:  Get the summary information from an investor account 
-      tags: ['investor']
-      parameters:
-        - in: path
-          name: investorId
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getInvestorResponse'
-          links:
-            GetInvestorBankingInformation: 
-              operationId: GetInvestorBankingInfo
-              parameters:
-                investorId: '$request.path.investorId'
-            GetInvestorAudit: 
-              operationId: GetInvestorAuditHistory
-              parameters:
-                investorId: '$request.path.investorId'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /investors/{investorId}/balance:
-    get:
-      operationId: GetInvestorBalance
-      summary: Get Investor Balance
-      description: Get the investor balance at a given date and the investor id. If the date is not provided then the most recent balance is returned.
-      tags: ['investor']
-      parameters:
-        - $ref: '#/components/parameters/investorId'
-        - $ref: '#/components/parameters/asOfDate'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getInvestorBalanceResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /investors/{investorId}/audit/history:
-    get:
-      operationId: GetInvestorAuditHistory
-      summary: Get Investor Audit
-      description: Get the investor change audit given the investor id starting from most recent. Data ranges can be provided to further restrict.
-      tags: ['investor']
-      parameters:
-        - $ref: '#/components/parameters/investorId'
-        - $ref: '#/components/parameters/fromDate'
-        - $ref: '#/components/parameters/toDate'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/offset'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getInvestorAuditHistoryResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  #  PHASE 2  
-  # /investors/{investorId}/documents:
-  #   get:
-  #     description: Get the investor related documents
-  #     operationId: "GetInvestorDocuments"
-  #     tags: ['investor']
-  #     parameters:
-  #       - $ref: '#/components/parameters/investorId'
-  #       - $ref: '#/components/parameters/limit'
-  #       - $ref: '#/components/parameters/offset'
-  #       - $ref: '#/components/parameters/asOfDate' 
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/collectionMetadata'
-  #                 data: 
-  #                   type: array
-  #                   items:
-  #                     $ref: '#/components/schemas/documentHeader'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  # /investors/{investorId}/profile/compliance:
-  #   get:
-  #     description: Get the investor compliance process status
-  #     operationId: GetInvestorComplianceInformation
-  #     tags: ['investor']
-  #     parameters:
-  #       - $ref: '#/components/parameters/investorId'
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/entitySubResourceMetadata'
-  #                 data: 
-  #                   $ref: '#/components/schemas/complianceInfo'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  # /investors/{investorId}/relationships/:
-  #   get:
-  #     operationId: GetInvestorOtherRelationships
-  #     summary: GetInvestorOtherRelationships
-  #     description: GetInvestorOtherRelationships
-  #     tags: ['investor']
-  #     parameters:
-  #       - $ref: '#/components/parameters/investorId'
-  #       - $ref: '#/components/parameters/limit'
-  #       - $ref: '#/components/parameters/offset'
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/collectionMetadata'
-  #                 data: 
-  #                   type: array
-  #                   items:
-  #                     $ref: '#/components/schemas/userRelationship'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  # /investors/{investorId}/profile/settings/banking:
-  #   get:
-  #     operationId: GetInvestorBankingInfo
-  #     summary: Get Investor Banking Info
-  #     description: Get the banking information from an investor
-  #     tags: ['investor']
-  #     parameters:
-  #       - $ref: '#/components/parameters/investorId'
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/entitySubResourceMetadata'
-  #                 data: 
-  #                   $ref: '#/components/schemas/bankingSummary'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  # /investors/{investorId}/profile/settings/notifications:
-  #   get:
-  #     operationId: GetInvestorNotificationsSettings
-  #     summary: Get Investor Notifications
-  #     description: Get the notifications configuration for an investor
-  #     tags: ['investor']
-  #     parameters:
-  #       - $ref: "#/components/parameters/investorId"
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/entitySubResourceMetadata'
-  #                 data: 
-  #                   $ref: '#/components/schemas/notificationsSettings'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-# Returns complex investor profile object 
-
-  /investors/{investorId}/profile:
-    get:
-      operationId: GetInvestorProfile
-      summary: Get Investor Profile
-      description: Get the investor profile given the investor id
-      tags: ['investor']
-      parameters:
-        - $ref: '#/components/parameters/investorId'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/getInvestorProfileResponse"
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-
-  # /investors/{investorId}/profile/audit:
-  #   get:
-  #     operationId: GetInvestorProfileAudit
-  #     description: Get the audit information from the investor
-  #     tags: ['investor']
-  #     parameters:
-  #       - $ref: '#/components/parameters/investorId'
-  #       - $ref: '#/components/parameters/fromDate'
-  #       - $ref: '#/components/parameters/toDate'
-  #       - $ref: '#/components/parameters/limit'
-  #       - $ref: '#/components/parameters/offset'
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/getInvestorProfileAuditResponse'
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  # /investors/{investorId}/notifications/emails:
-  #   get:      
-  #     operationId: GetInvestorEmailNotifications
-  #     summary: Get Investor Email Notifications
-  #     description: Get the notifications sent as emails to an investor given the investor id
-  #     tags: ['investor']
-  #     parameters:
-  #       - $ref: '#/components/parameters/investorId'
-  #       - $ref: '#/components/parameters/fromDate'
-  #       - $ref: '#/components/parameters/toDate'
-  #       - in: query
-  #         name: orderBy
-  #         required: false
-  #         schema:
-  #           type: string
-  #           enum:
-  #             - 'dateSent'
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/getInvestorNotitificationsEmailsResponse'
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  /investors/{investorId}/contacts:
-    get:
-      operationId: GetInvestorContacts
-      summary: Get Investor Contacts
-      description: Get the contacts associated to an investor given the investor id
-      tags: ['investor']
-      parameters:
-        - $ref: '#/components/parameters/investorId'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/offset'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getInvestorContactsResponse'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-
-###########################
-# CONTACT API 
-########################### 
-
-  # /contacts:
-  #   get:
-  #     operationId: GetContacts
-  #     summary: Get Contacts
-  #     description: Get the contacts linked to the API user
-  #     tags: ['contact']
-  #     parameters:
-  #       - $ref: '#/components/parameters/limit'
-  #       - $ref: '#/components/parameters/offset'
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/getContactsResponse'
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  /contacts/{contactId}:
-    get:
-      operationId: GetContact
-      summary: Get Contact
-      description: Get the contact details given a contact id
-      tags: ['contact']
-      parameters:
-        - in: path
-          name: contactId 
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getContactResponse'
-          links:
-              GetUserByUserId:
-                operationId: GetUser
-                parameters:
-                  userId: '$response.body#/data/user/id'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /contacts/{contactId}/profile:
-    get:
-      operationId: GetContactProfile
-      summary: Get Contact Profile
-      description: Get the contact profile given a contact id
-      tags: ['contact']
-      parameters:
-        - in: path
-          name: contactId 
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/getContactProfileResponse'
-          links:
-              GetUserByUserId:
-                operationId: GetUser
-                parameters:
-                  userId: '$response.body#/data/user/id'
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-
-###########################
-# USER API
-###########################   
-
-  /users
-    get:
-      operationId: GetUsers
-      summary: Get Users
-      description: Get the users linked to the API user      
-      tags: ['user']
-      parameters:
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/offset'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/getUsersResponse"
-        "401":
-          description: Authorization information is missing or invalid.
-                 
-  /users/{userId}:
-    get:
-      operationId: GetUser
-      summary: Get User
-      description: Get the user details given a user id
-      tags: ['user']
-      parameters:
-        - $ref: '#/components/parameters/userId'
-      responses:
-        "200":
-          description: OK
-          content:
-           application/json:
-              schema:
-                $ref: "#/components/schemas/getUserResponse"
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-  /users/{userId}/activity:
-    get:
-      operationId: GetUserActivity
-      summary: Get User Activity
-      description: Get activity activity given a user id, ordered from most recent activity
-      tags: ['user']
-      parameters:
-        - $ref: '#/components/parameters/userId'
-        - in: query
-          name: type
-          description: One or more activity types
-          required: false
-          schema:
-            type: string
-            enum:
-            - login
-            - download
-      responses:
-        "200":
-          description: OK
-          content:
-           application/json:
-              schema:
-                $ref: "#/components/schemas/getUserActivitiesResponse"
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Not found.
-
-
-  /status:
-    get:
-      operationId: GetStatus
-      summary: Get status
-      description: Get status
-      tags: ['internal']
-      responses:
-        "200":
-          description: OK
-          content:
-           application/json:
-            schema:
-              type: object
-
-
-  # /users/{userId}/relationships/:
-  #   get:
-  #     operationId: GetUserRelationships
-  #     summary: Get the relationships the user has with a specific role
-  #     description: Get information about the user
-  #     tags: ['user']
-  #     parameters:
-  #       - in: path
-  #         name: userId 
-  #         required: true
-  #         schema:
-  #           type: string
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #          application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/collectionMetadata'
-  #                 data: 
-  #                   type: array
-  #                   items:
-  #                     $ref: '#/components/schemas/userInfo'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-###########################
-# EMAIL API
-# NOTE: PHASE 2
-###########################   
-
-  # /emails/{emailId}:
-  #   get:
-  #     description: Get information from an email
-  #     operationId: "GetEmailInfo"
-  #     tags: ['email']
-  #     parameters:
-  #       - in: path
-  #         name: emailId 
-  #         required: true
-  #         schema:
-  #           type: string
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #          application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 metadata:
-  #                   $ref: '#/components/schemas/entityMetadata'
-  #                 data: 
-  #                   type: array
-  #                   items:
-  #                     $ref: '#/components/schemas/emailInfo'
-  #                 errors:
-  #                   type: object
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-  # /email/{emailId}/attachment/{attachmentId}:
-  #   get:
-  #     operationId: GetEmailAttachment
-  #     summary: Get Email Attachment
-  #     description: Get the attachment from an email
-  #     tags: ['email']
-  #     parameters:
-  #       - in: path
-  #         name: emailId 
-  #         required: true
-  #         schema:
-  #           type: string
-  #       - in: path
-  #         name: attachmentId 
-  #         required: true
-  #         schema:
-  #           type: string
-  #     responses:
-  #       "200":
-  #         description: OK
-  #         content:
-  #           application/octet-stream:
-  #             schema:
-  #               type: string
-  #               format: binary
-  #       "401":
-  #         description: Authorization information is missing or invalid.
-  #       "404":
-  #         description: Not found.
-
-###########################
-# DOCUMENT API
-# NOTE: PHASE 2
-###########################   
-
-  # /documents/{documentId}:
-  #   get:
-  #     description: Get a document
-  #     operationId: "GetDocument"
-  #     tags: ['document']
-  #     parameters:
-  #       - in: path
-  #         name: documentId 
-  #         required: true
-  #         schema:
-  #           type: string
-  #     responses:
-  #       "200":
-  #         description: Successful response
-  #         content:
-  #           application/octet-stream:
-  #             schema:
-  #               type: string
-  #               format: binary
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-    oAuth2ClientCredentials:
-      type: oauth2
-      description: OAuth2 Client Credentials Flow
-      flows:
-        clientCredentials:
-          tokenUrl: https://api.eu.alterdomus.com/corpro/token
-          scopes: {}
-  schemas:
-
-###########################
-# METADATA
-###########################  
-
-    baseMetadata:
-      type: object
-      additionalProperties: false
-      properties:
-        instance: 
-          type: string
-        responseType:
-          type: string
-          enum:
-              - 'entity'
-              - 'entity-sub-resource'
-              - 'collection'
-          nullable: true        
-
-    entityMetadata:
-      allOf:
-        - $ref: '#/components/schemas/baseMetadata'
-      type: object
-      additionalProperties: false
-      properties:
-        entityType:
-          type: string
-          nullable: false
-        entityId: 
-          type: string
-          nullable: false
-
-    entitySubResourceMetadata:
-      allOf:
-        - $ref: '#/components/schemas/baseMetadata'
-      type: object
-      additionalProperties: false
-      properties:
-        entityType:
-          type: string
-          nullable: false
-        entityPath:
-          type: string
-          nullable: false
-        entityId: 
-          type: string
-          nullable: false
-
-    collectionMetadata:
-      allOf:
-        - $ref: '#/components/schemas/baseMetadata'
-      type: object
-      additionalProperties: false
-      properties:
-        totalCount:
-          type: integer
-          description: Returns the total items matching a collection query. This value may not be returned.
-          nullable: true
-        count:
-          type: integer
-          nullable: false
-          description: The amount of items returned in the collection query.
-        limit:
-          type: integer
-          nullable: false
-          description: The maximum items of returned for the collection query as applied by server.
-        offset:
-          type: integer
-          nullable: false
-          description: The result offset for the collection query. Zero based.
-
-###########################
-# HEADERS
-########################### 
-
-    fundHeader:    
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        # FUTURE: current NAV
-        # FUTURE: NAV modified NAV        
-
-    investorHeader:
-      type: object
-      additionalProperties: false
-      properties:
-        id:          
-          type: string
-        name: 
-          type: string
-        fund:
-          $ref: '#/components/schemas/fundHeader'
-        alternativeId:
-          type: string
-          description: An alternative investor identifier provided to Alter Domus
-
-    contactHeader:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        userName:
-          type: string
-        investor:
-          $ref: '#/components/schemas/investorHeader'
-
-    userHeader:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        userName:
-          type: string
-          format: email
-          nullable: true
-        firstName:
-          type: string
-          nullable: true
-        lastName:
-          type: string
-          nullable: true
-
-    emailHeader:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-
-    userActivityHeader:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        date:
-          type: string
-          format: date-time
-        activity:
-          $ref: '#/components/schemas/userActivityType'
-        user:
-          $ref: '#/components/schemas/userHeader'
-
-###########################
-# RESPONSE
-########################### 
-
-   
-    getFundsResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/fundHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getFundResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entityMetadata'
-        data: 
-          $ref: '#/components/schemas/fundSummary'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getFundProfileResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entityMetadata'
-        data: 
-          $ref: '#/components/schemas/fundProfile'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorsResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/investorHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entityMetadata'
-        data: 
-          $ref: '#/components/schemas/investorSummary'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorProfileResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entitySubResourceMetadata'
-        data: 
-          $ref: '#/components/schemas/investorProfile'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorProfileAuditResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          $ref: '#/components/schemas/investorAuditCollection'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getUsersResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/userHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getUserResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entityMetadata'
-        data: 
-          $ref: '#/components/schemas/userSummary'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorNotitificationsEmailsResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/emailHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getFundBalanceResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entitySubResourceMetadata'
-        data: 
-          $ref: '#/components/schemas/fundBalanceSummary'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getContactsResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/contactHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getContactResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:          
-          $ref: '#/components/schemas/entityMetadata'
-        data: 
-          $ref: '#/components/schemas/contactSummary'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-  
-    getContactProfileResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entityMetadata'
-        data: 
-          $ref: '#/components/schemas/contactProfileSummary'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getFundInvestorsResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/investorHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getUserActivitiesResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/userActivityHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorBalanceResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/entitySubResourceMetadata'
-        data: 
-          $ref: '#/components/schemas/investorBalanceSummary'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorAuditHistoryResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          $ref: '#/components/schemas/investorAuditCollection'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-    getInvestorContactsResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        metadata:
-          $ref: '#/components/schemas/collectionMetadata'
-        data: 
-          type: array
-          items:
-            $ref: '#/components/schemas/contactHeader'
-        error:
-          $ref: '#/components/schemas/errorSummary'
-
-###########################
-# OTHERS
-########################### 
-
-    userSummary:
-      type: object
-      additionalProperties: false
-      properties:
-        user:
-          $ref: '#/components/schemas/userHeader'
-        emails:
-          type: array
-          items:
-            $ref: '#/components/schemas/labeledEmailAddress'
-        addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/postalAddress'
-          nullable: true
-        lastLoginDate:
-          type: string
-          format: date-time
-          nullable: true 
-
-    userActivityType:
-      type: object
-      additionalProperties: false
-      properties:
-        type:
-          type: string
-          enum:
-            - login
-            - download  
-
-    emailInfo: 
-      type: object
-      additionalProperties: false
-      properties:
-        email:
-          $ref: '#/components/schemas/emailHeader'
-        dateSent:
-          type: string
-          format: date-time
-        from:
-          $ref: '#/components/schemas/emailAddress'
-        to:
-          type: array
-          items:
-            $ref: '#/components/schemas/emailAddress'
-        cc:
-          type: array
-          items:
-            $ref: '#/components/schemas/emailAddress'
-        bcc:
-          type: array
-          items:
-            $ref: '#/components/schemas/emailAddress'
-        subject:
-          type: string
-        body:
-          type: string
-        attachments:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-              mime-type:
-                type: string
-                example: application/pdf
-
-    auditBase:
-      type: object
-      additionalProperties: false
-      properties:
-        date:
-          type: string
-          format: date-time
-        id:
-          type: string
-          nullable: true
-          description: The unique identifier related to this audit
-        changedBy:
-          type: string
-          nullable: true
-        # FUTURE
-        # changeReason:
-        #   type: string
-        #   nullable: true
-
-    fieldAudit:
-       allOf:
-        - $ref: '#/components/schemas/auditBase'
-       type: object
-       additionalProperties: false
-       properties:
-        fieldUpdated:
-          type: string
-        originalValue:
-          type: string
-        newValue:
-          type: string
-
-    investorAuditCollection:
-      type: object
-      additionalProperties: false
-      properties:
-        investor:
-          $ref: '#/components/schemas/investorHeader'
-        audits:
-          type: array
-          items:
-            $ref: '#/components/schemas/fieldAudit' 
-
-    investorProfile:
-      type: object
-      additionalProperties: false
-      properties:
-        summary:
-          $ref: '#/components/schemas/investorSummary'
-        banking:
-          $ref: '#/components/schemas/bankingSummary'
-        compliance:
-          $ref: '#/components/schemas/complianceInfo'
-        tax:
-          $ref: '#/components/schemas/taxInfo'
-        distribution:
-          $ref: '#/components/schemas/distributionInfo'
-        primaryContact:          
-          $ref: '#/components/schemas/personInfo'
-        investmentAdvisor:
-          $ref: '#/components/schemas/personInfo'
-        authorizedSigner:
-          $ref: '#/components/schemas/personInfo'
-
-    complianceInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        onboardingStatus:
-          type: string
-          enum:
-            - NotStarted
-            - Started
-            - Completed
-          description: Current status of the onboarding process for the investor
-       # FUTURE
-       # onboardingStatusModifiedDate:
-       #   type: string
-       #   format: date-time  
-       #   description: The date the current status was set
-
-    taxInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        TaxIdentifier: 
-            type: string
-
-    distributionInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        election: 
-            type: string
-        method: 
-            type: string
-
-    personInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        fullName: 
-          type: string
-
-    communicationPreferencesInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        sendDocumentsAsAttachments:
-          type: boolean
-        notificationEmailAddress:
-          $ref: '#/components/schemas/notificationEmailAddress'
-
-    investorPermissionsInfo:
-      type: object
-      additionalProperties: false
-      properties:
-       documentFolderPermissions:
-          $ref: '#/components/schemas/investorDocumentFolderPermissionsInfo'
-             
-    investorDocumentFolderPermissionsInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        permissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/investorFolderDocumentPermissionInfo'
-
-    documentFolderInfo:
-      type: object
-      additionalProperties: false
-      properties:
-        name: 
-          type: string
-          description: "The name of the folder."
-
-    investorFolderDocumentPermissionInfo:
-      allOf:
-        - $ref: '#/components/schemas/documentFolderInfo'
-      type: object
-      additionalProperties: false
-      properties:
-        notifyOnDocumentChanges:
-          type: boolean
-
-    investorSummary:
-      allOf:
-        - $ref: '#/components/schemas/investorHeader'
-      type: object
-      additionalProperties: false
-      properties:
-        investorType:
-          type: string
-          description: The type of investor
-          nullable: true
-        investorStatus:
-          type: string
-          description: The current status of the investor account.
-          example: "Possible values are: Active, Pending (compliance ongoing), Redeemed, Transferred"
-        # FUTURE
-        # statusModifiedDate:
-        #   type: string
-        #   format: date-time  
-        #   description: The date the current status was set
-        balance:
-          $ref: '#/components/schemas/investorBalanceSummary'
-
-    fundSummary:
-      allOf:
-        - $ref: '#/components/schemas/fundHeader'
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-        fundType:
-          type: string
-          nullable: true
-        #entityType:
-        #  type: string
-        #  nullable: true
-        balance:
-          $ref: "#/components/schemas/fundBalanceSummary"
-        parentFund: 
-          $ref: "#/components/schemas/fundHeader"
-
-    fundProfile:
-      type: object
-      additionalProperties: false
-      properties:
-        summary:
-          $ref: '#/components/schemas/fundSummary'
-        segment:
-          type: string
-          nullable: true
-        strategy:
-          type: string
-          nullable: true
-        openEndedOrClosedEnded:
-          type: string
-          example: "Valid values are: Open Ended, Closed Ended, Separate/Single Client, Not Applicable"
-          nullable: true
-
-    bankingSummary:
-      type: object
-      additionalProperties: false
-      properties:
-        bankAccounts:
-          type: array
-          items:
-             $ref: '#/components/schemas/bankAccount'
-
-    bankAccount:
-      type: object
-      additionalProperties: false
-      properties:
-        label:
-          type: string
-        accountName:
-          type: string
-        accountNumber:
-          type: string
-        aba:
-          type: string
-        swift:
-          type: string
-        iban:
-          type: string
-        furtherCredit:
-          type: string
-        description:
-          type: string
-        other:
-          type: string
-
-    bank:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-            type: string
-        address:
-          $ref: '#/components/schemas/postalAddress'
-
-    contactSummary:
-      type: object
-      additionalProperties: false
-      properties:
-        contact:  
-          $ref: '#/components/schemas/contactHeader'
-        user:
-          $ref: '#/components/schemas/userHeader'        
-        # FUTURE
-        # enabledModifiedDate:
-        #   type: string
-        #   format: date-time
-        #   nullable: true
-        #   description: The date the current Enabled status was set
-
-    contactProfileSummary:
-      type: object
-      additionalProperties: false
-      properties:
-        summary:
-          $ref: '#/components/schemas/contactSummary'
-        isAuthorizedResponder:
-          type: boolean
-        communicationPreferences:
-          $ref: '#/components/schemas/communicationPreferencesInfo'
-        investorPermissions:
-          $ref: '#/components/schemas/investorPermissionsInfo'
-
-    fundBalanceSummary:
-      type: object
-      additionalProperties: false
-      properties:
-        fund:
-          $ref: '#/components/schemas/fundHeader'
-        currency:
-          type: string
-          nullable: true
-        netAssetValue:
-          type: number
-          nullable: true
-        commitmentAmount:
-          type: number
-          nullable: true
-        outstandingAmount:
-          type: number
-          nullable: true
-        modifiedDate:
-          type: string
-          format: date-time
-          nullable: true
-        asOfDate:
-          type: string
-          format: date-time
-          nullable: true
-
-    investorBalanceSummary:
-      type: object
-      additionalProperties: false
-      description: An Investor account balance
-      properties:
-        investor:
-          $ref: '#/components/schemas/investorHeader'
-        currency:
-          type: string 
-          nullable: true
-        netAssetValue:
-          type: number
-          nullable: true
-        commitmentAmount:
-          type: number
-          nullable: true
-        outstandingAmount:
-          type: number
-          nullable: true
-        modifiedDate:
-          type: string
-          format: date-time
-          nullable: true
-        asOfDate:
-          type: string
-          format: date-time
-          nullable: true
-
-    postalAddress:
-      type: object
-      additionalProperties: false
-      properties:
-        label:
-          type: string
-          nullable: true
-        streetAddress:
-          type: string
-          nullable: true
-        city:
-          type: string
-          nullable: true
-        stateProvinceRegion:
-          type: string
-          nullable: true
-        postCode:
-          type: string
-          nullable: true
-        country:
-          type: string
-          nullable: true
-
-    emailAddress:
-      type: object
-      additionalProperties: false
-      properties:                   
-        email:
-          type: string
-          format: email    
-
-    labeledEmailAddress:
-      allOf:
-        - $ref: '#/components/schemas/emailAddress'
-      type: object
-      additionalProperties: false
-      properties:
-        labels:
-          type: array
-          items: 
-            type: object
-            additionalProperties: false
-            properties:
-              key: 
-                type: string                    
-              value: 
-                type: string    
-
-    notificationEmailAddress:
-      allOf:
-        - $ref: '#/components/schemas/emailAddress'
-      type: object
-      additionalProperties: false
-      properties:
-        forwardingType:            
-          $ref: '#/components/schemas/emailForwardType'           
-
-    emailForwardType:
-      type: object
-      nullable: true
-      additionalProperties: false      
-      properties:
-        type:
-          type: string
-          enum:
-            - TO
-            - CC
-            - BCC
-
-    documentHeader:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-        id:
-          type: string  
-
-
-    errorSummary:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        target:
-          type: string
-        details:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              code:
-                type: string
-              message:
-                type: string
-              target:
-                type: string   
-
-
-  parameters:
-    limit:
-      name: limit
-      in: query
-      description: "Limit"
-      schema:
-        type: integer
-        nullable: true
-    offset:
-      name: offset
-      in: query
-      description: "Offset"
-      schema:
-        type: integer
-        nullable: true
-    asOfDate:
-      name: asOfDate
-      in: query
-      description: "AsOfDate"
-      schema:
-        type: string
-        format: date-time        
-    fromDate:
-      name: fromDate
-      in: query
-      description: "FromDate"
-      schema:
-        type: string
-        format: date-time
-    toDate:
-      name: toDate
-      in: query
-      description: "ToDate"
-      schema:
-        type: string
-        format: date-time
-    fundId:
-      name: fundId
-      in: path
-      required: true
-      description: "Fund Id"
-      schema:
-        type: string
-        nullable: false
-    contactId:
-      name: contactId
-      in: path
-      required: true
-      description: "Contact Id"
-      schema:
-        type: string
-        nullable: false
-    userId:
-      name: userId
-      in: path
-      required: true
-      description: "User Id"
-      schema:
-        type: string
-        nullable: false
-    investorId:
-      name: investorId
-      in: path
-      required: true
-      description: "Investor Id"
-      schema:
-        type: string
-        nullable: false
-    orderBy:
-      name: orderBy
-      in: query      
-      description: "Order By"
-      schema:
-        type: string
-        nullable: true
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI API",
+    "version": "v1"
+  },
+  "paths": {
+    "/funds": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/funds/{fundId}": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "fundId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/funds/{fundId}/profile": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "fundId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundProfileResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundProfileResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/funds/{fundId}/balance": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "fundId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "asOfDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundBalanceResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundBalanceResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundBalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/funds/{fundId}/investors": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "fundId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundInvestorsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundInvestorsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundInvestorsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/investors": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/investors/{investorId}": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "investorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/investors/{investorId}/balance": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "investorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "asOfDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorBalanceResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorBalanceResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorBalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/investors/{investorId}/audit/history": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "investorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorAuditHistoryResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorAuditHistoryResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorAuditHistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/investors/{investorId}/profile": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "investorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorProfileResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorProfileResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/investors/{investorId}/contacts": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "investorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorContactsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorContactsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetInvestorContactsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{contactId}": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetContactResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetContactResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetContactResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{contactId}/profile": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetContactProfileResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetContactProfileResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetContactProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUsersResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUsersResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUsersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/activity": {
+      "get": {
+        "tags": [
+          ""
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserActivitiesResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserActivitiesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserActivitiesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BankAccount": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountName": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "aba": {
+            "type": "string",
+            "nullable": true
+          },
+          "swift": {
+            "type": "string",
+            "nullable": true
+          },
+          "iban": {
+            "type": "string",
+            "nullable": true
+          },
+          "furtherCredit": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "other": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BankingSummary": {
+        "type": "object",
+        "properties": {
+          "bankAccounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BankAccount"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BaseMetadataResponseType": {
+        "enum": [
+          "Entity",
+          "EntitySubResource",
+          "Collection"
+        ],
+        "type": "string"
+      },
+      "CollectionMetadata": {
+        "type": "object",
+        "properties": {
+          "responseType": {
+            "$ref": "#/components/schemas/BaseMetadataResponseType"
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommunicationPreferencesInfo": {
+        "type": "object",
+        "properties": {
+          "sendDocumentsAsAttachments": {
+            "type": "boolean"
+          },
+          "notificationEmailAddress": {
+            "$ref": "#/components/schemas/NotificationEmailAddress"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ComplianceInfo": {
+        "type": "object",
+        "properties": {
+          "onboardingStatus": {
+            "$ref": "#/components/schemas/ComplianceInfoOnboardingStatus"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ComplianceInfoOnboardingStatus": {
+        "enum": [
+          "NotStarted",
+          "Started",
+          "Completed"
+        ],
+        "type": "string"
+      },
+      "ContactHeader": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "investor": {
+            "$ref": "#/components/schemas/InvestorHeader"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ContactProfileSummary": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/ContactSummary"
+          },
+          "isAuthorizedResponder": {
+            "type": "boolean"
+          },
+          "communicationPreferences": {
+            "$ref": "#/components/schemas/CommunicationPreferencesInfo"
+          },
+          "investorPermissions": {
+            "$ref": "#/components/schemas/InvestorPermissionsInfo"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ContactSummary": {
+        "type": "object",
+        "properties": {
+          "contact": {
+            "$ref": "#/components/schemas/ContactHeader"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserHeader"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Details": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "target": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DistributionInfo": {
+        "type": "object",
+        "properties": {
+          "election": {
+            "type": "string",
+            "nullable": true
+          },
+          "method": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmailForwardType": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/EmailForwardTypeType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmailForwardTypeType": {
+        "enum": [
+          "TO",
+          "CC",
+          "BCC"
+        ],
+        "type": "string"
+      },
+      "EntityMetadata": {
+        "type": "object",
+        "properties": {
+          "responseType": {
+            "$ref": "#/components/schemas/BaseMetadataResponseType"
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityType": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EntitySubResourceMetadata": {
+        "type": "object",
+        "properties": {
+          "responseType": {
+            "$ref": "#/components/schemas/BaseMetadataResponseType"
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityType": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorSummary": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "target": {
+            "type": "string",
+            "nullable": true
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Details"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FieldAudit": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "changedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldUpdated": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "newValue": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FundBalanceSummary": {
+        "type": "object",
+        "properties": {
+          "fund": {
+            "$ref": "#/components/schemas/FundHeader"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "netAssetValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "commitmentAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "outstandingAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "asOfDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FundHeader": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FundProfile": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/FundSummary"
+          },
+          "segment": {
+            "type": "string",
+            "nullable": true
+          },
+          "strategy": {
+            "type": "string",
+            "nullable": true
+          },
+          "openEndedOrClosedEnded": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FundSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "fundType": {
+            "type": "string",
+            "nullable": true
+          },
+          "balance": {
+            "$ref": "#/components/schemas/FundBalanceSummary"
+          },
+          "parentFund": {
+            "$ref": "#/components/schemas/FundHeader"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetContactProfileResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntityMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ContactProfileSummary"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetContactResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntityMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ContactSummary"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetFundBalanceResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntitySubResourceMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FundBalanceSummary"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetFundInvestorsResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvestorHeader"
+            },
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetFundProfileResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntityMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FundProfile"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetFundResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntityMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FundSummary"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetFundsResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FundHeader"
+            },
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetInvestorAuditHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvestorAuditCollection"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetInvestorBalanceResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntitySubResourceMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvestorBalanceSummary"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetInvestorContactsResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactHeader"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetInvestorProfileResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntitySubResourceMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvestorProfile"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetInvestorResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntityMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvestorSummary"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetInvestorsResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvestorHeader"
+            },
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserActivitiesResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserActivityHeader"
+            },
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/EntityMetadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUsersResponse": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/CollectionMetadata"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserHeader"
+            },
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorAuditCollection": {
+        "type": "object",
+        "properties": {
+          "investor": {
+            "$ref": "#/components/schemas/InvestorHeader"
+          },
+          "audits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldAudit"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorBalanceSummary": {
+        "type": "object",
+        "properties": {
+          "investor": {
+            "$ref": "#/components/schemas/InvestorHeader"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "netAssetValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "commitmentAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "outstandingAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "asOfDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorDocumentFolderPermissionsInfo": {
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvestorFolderDocumentPermissionInfo"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorFolderDocumentPermissionInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "notifyOnDocumentChanges": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorHeader": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "fund": {
+            "$ref": "#/components/schemas/FundHeader"
+          },
+          "alternativeId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorPermissionsInfo": {
+        "type": "object",
+        "properties": {
+          "documentFolderPermissions": {
+            "$ref": "#/components/schemas/InvestorDocumentFolderPermissionsInfo"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorProfile": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/InvestorSummary"
+          },
+          "banking": {
+            "$ref": "#/components/schemas/BankingSummary"
+          },
+          "compliance": {
+            "$ref": "#/components/schemas/ComplianceInfo"
+          },
+          "tax": {
+            "$ref": "#/components/schemas/TaxInfo"
+          },
+          "distribution": {
+            "$ref": "#/components/schemas/DistributionInfo"
+          },
+          "primaryContact": {
+            "$ref": "#/components/schemas/PersonInfo"
+          },
+          "investmentAdvisor": {
+            "$ref": "#/components/schemas/PersonInfo"
+          },
+          "authorizedSigner": {
+            "$ref": "#/components/schemas/PersonInfo"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvestorSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "fund": {
+            "$ref": "#/components/schemas/FundHeader"
+          },
+          "alternativeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "investorType": {
+            "type": "string",
+            "nullable": true
+          },
+          "investorStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "balance": {
+            "$ref": "#/components/schemas/InvestorBalanceSummary"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LabeledEmailAddress": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Labels"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Labels": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NotificationEmailAddress": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "forwardingType": {
+            "$ref": "#/components/schemas/EmailForwardType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PersonInfo": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostalAddress": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "streetAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "stateProvinceRegion": {
+            "type": "string",
+            "nullable": true
+          },
+          "postCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TaxInfo": {
+        "type": "object",
+        "properties": {
+          "taxIdentifier": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Type": {
+        "enum": [
+          "Login",
+          "Download"
+        ],
+        "type": "string"
+      },
+      "UserActivityHeader": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "activity": {
+            "$ref": "#/components/schemas/UserActivityType"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserHeader"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserActivityType": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/UserActivityTypeType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserActivityTypeType": {
+        "enum": [
+          "Login",
+          "Download"
+        ],
+        "type": "string"
+      },
+      "UserHeader": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserSummary": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserHeader"
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LabeledEmailAddress"
+            },
+            "nullable": true
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostalAddress"
+            },
+            "nullable": true
+          },
+          "lastLoginDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://localhost:44396/connect/authorize",
+            "tokenUrl": "https://localhost:44396/connect/token",
+            "scopes": {
+              "OpenAPI": "OpenAPI API"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": [ ]
+    }
+  ]
+}
