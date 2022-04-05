@@ -1,0 +1,1835 @@
+openapi: "3.0.3"
+
+info:
+  title: CorPro API
+  version: "1.0.0"
+  termsOfService: "https://developer.alterdomus.com/corpro/terms"
+  contact:
+    name: "Alter Domus CorPro API"
+    url: "https://developer.alterdomus.com/corpro"
+    email: "corpro.support@alterdomus.com"
+
+servers:
+  - url: https://app-dev-corpro-api-openapi-02.azurewebsites.net
+    description: Backend
+
+  - url: https://apidev.eu.alterdomus.com/corpro
+    description: CorPro Europe (TLS)
+
+  - url: https://apidev.us.alterdomus.com/corpro
+    description: CorPro North America (TLS)
+
+  - url: https://secure-apidev.eu.alterdomus.com/corpro
+    description: CorPro Europe (mTLS)
+    
+  - url: https://secure-apidev.us.alterdomus.com/corpro
+    description: CorPro North America (mTLS)
+
+# Entity Summary = Default Get for Entity
+# Entity Header = Default basic profile of Entity
+
+security:
+  - oAuth2ClientCredentials: []
+
+paths:
+
+###########################
+# FUND API
+###########################
+
+  /funds:
+    get:
+      operationId: GetFunds
+      summary: Get Funds
+      description: Get the collection of funds related to the user
+      tags: ['fund']
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - name: name
+          in: query
+          schema:
+            type: string
+            nullable: true
+          description: fund name filter using a SQL LIKE match (case insensitive)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getFundsResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /funds/{fundId}:
+    get:
+      operationId: GetFund
+      summary: Get Fund
+      description: Get the fund summary by the fund id
+      tags: ['fund']
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+               schema:
+                $ref: '#/components/schemas/getFundResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /funds/{fundId}/profile:
+    get:
+      operationId: GetFundProfile
+      summary: Get Fund Profile
+      description: Get the fund profile by the fund id
+      tags: ['fund']
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+               schema:
+                $ref: '#/components/schemas/getFundProfileResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /funds/{fundId}/balance:
+    get:
+      operationId: GetFundBalance
+      summary: Get Fund Balance
+      description: Get the fund balance at a given date. If the date is not provided then the most recent fund balance is returned.
+      tags: ['fund']
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - $ref: '#/components/parameters/asOfDate'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+               schema:
+                 $ref: '#/components/schemas/getFundBalanceResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /funds/{fundId}/investors:
+    get:
+      operationId: GetFundInvestors
+      summary: Get Fund Investors
+      description: Get the investors associated with the fund
+      tags: ['fund']
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+             schema:
+                $ref: '#/components/schemas/getFundInvestorsResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  # /funds/{fundId}/contacts/fundmanagers:
+  #   get:
+  #     operationId: "GetFundManagers"
+  #     summary: "Get Fund Managers"
+  #     description: Get the users with a role of fund manager from the fund
+  #     tags: ['fund']
+  #     parameters:
+  #       - $ref: '#/components/parameters/fundId'
+  #       - $ref: '#/components/parameters/limit'
+  #       - $ref: '#/components/parameters/offset'
+  #       - $ref: '#/components/parameters/asOfDate' 
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #            schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/collectionMetadata'
+  #                 data: 
+  #                   type: array
+  #                   items:
+  #                     $ref: '#/components/schemas/contactSummary'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  # /funds/{fundId}/contacts/investors:
+  #   get:
+  #     operationId: "GetFundInvestors"
+  #     summary: "Get Fund Investors"
+  #     description: Get the users with a role of investor from the fund
+  #     tags: ['fund']
+  #     parameters:
+  #       - $ref: '#/components/parameters/fundId'
+  #       - $ref: '#/components/parameters/limit'
+  #       - $ref: '#/components/parameters/offset'
+  #       - $ref: '#/components/parameters/asOfDate' 
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #            schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/collectionMetadata'
+  #                 data: 
+  #                   type: array
+  #                   items:
+  #                     $ref: '#/components/schemas/contactSummary'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+###########################
+# INVESTOR API
+###########################
+
+# NOTE Complex and potentially slow
+  /investors:
+    get:
+      operationId: GetInvestors
+      summary: Get Investors
+      description: Returns the investors related to the API client
+      tags: ['investor']
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      - name: name
+        in: query
+        schema:
+          type: string
+          nullable: true
+          description: Investor name filter using a SQL LIKE match 
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getInvestorsResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /investors/{investorId}:
+    get:
+      operationId: GetInvestor
+      summary: Get the summary information from an investor account 
+      description:  Get the summary information from an investor account 
+      tags: ['investor']
+      parameters:
+        - in: path
+          name: investorId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getInvestorResponse'
+          links:
+            GetInvestorBankingInformation: 
+              operationId: GetInvestorBankingInfo
+              parameters:
+                investorId: '$request.path.investorId'
+            GetInvestorAudit: 
+              operationId: GetInvestorAuditHistory
+              parameters:
+                investorId: '$request.path.investorId'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /investors/{investorId}/balance:
+    get:
+      operationId: GetInvestorBalance
+      summary: Get Investor Balance
+      description: Get the investor balance at a given date and the investor id. If the date is not provided then the most recent balance is returned.
+      tags: ['investor']
+      parameters:
+        - $ref: '#/components/parameters/investorId'
+        - $ref: '#/components/parameters/asOfDate'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getInvestorBalanceResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /investors/{investorId}/audit/history:
+    get:
+      operationId: GetInvestorAuditHistory
+      summary: Get Investor Audit
+      description: Get the investor change audit given the investor id starting from most recent. Data ranges can be provided to further restrict.
+      tags: ['investor']
+      parameters:
+        - $ref: '#/components/parameters/investorId'
+        - $ref: '#/components/parameters/fromDate'
+        - $ref: '#/components/parameters/toDate'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getInvestorAuditHistoryResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  #  PHASE 2  
+  # /investors/{investorId}/documents:
+  #   get:
+  #     description: Get the investor related documents
+  #     operationId: "GetInvestorDocuments"
+  #     tags: ['investor']
+  #     parameters:
+  #       - $ref: '#/components/parameters/investorId'
+  #       - $ref: '#/components/parameters/limit'
+  #       - $ref: '#/components/parameters/offset'
+  #       - $ref: '#/components/parameters/asOfDate' 
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/collectionMetadata'
+  #                 data: 
+  #                   type: array
+  #                   items:
+  #                     $ref: '#/components/schemas/documentHeader'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  # /investors/{investorId}/profile/compliance:
+  #   get:
+  #     description: Get the investor compliance process status
+  #     operationId: GetInvestorComplianceInformation
+  #     tags: ['investor']
+  #     parameters:
+  #       - $ref: '#/components/parameters/investorId'
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/entitySubResourceMetadata'
+  #                 data: 
+  #                   $ref: '#/components/schemas/complianceInfo'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  # /investors/{investorId}/relationships/:
+  #   get:
+  #     operationId: GetInvestorOtherRelationships
+  #     summary: GetInvestorOtherRelationships
+  #     description: GetInvestorOtherRelationships
+  #     tags: ['investor']
+  #     parameters:
+  #       - $ref: '#/components/parameters/investorId'
+  #       - $ref: '#/components/parameters/limit'
+  #       - $ref: '#/components/parameters/offset'
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/collectionMetadata'
+  #                 data: 
+  #                   type: array
+  #                   items:
+  #                     $ref: '#/components/schemas/userRelationship'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  # /investors/{investorId}/profile/settings/banking:
+  #   get:
+  #     operationId: GetInvestorBankingInfo
+  #     summary: Get Investor Banking Info
+  #     description: Get the banking information from an investor
+  #     tags: ['investor']
+  #     parameters:
+  #       - $ref: '#/components/parameters/investorId'
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/entitySubResourceMetadata'
+  #                 data: 
+  #                   $ref: '#/components/schemas/bankingSummary'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  # /investors/{investorId}/profile/settings/notifications:
+  #   get:
+  #     operationId: GetInvestorNotificationsSettings
+  #     summary: Get Investor Notifications
+  #     description: Get the notifications configuration for an investor
+  #     tags: ['investor']
+  #     parameters:
+  #       - $ref: "#/components/parameters/investorId"
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/entitySubResourceMetadata'
+  #                 data: 
+  #                   $ref: '#/components/schemas/notificationsSettings'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+# Returns complex investor profile object 
+
+  /investors/{investorId}/profile:
+    get:
+      operationId: GetInvestorProfile
+      summary: Get Investor Profile
+      description: Get the investor profile given the investor id
+      tags: ['investor']
+      parameters:
+        - $ref: '#/components/parameters/investorId'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getInvestorProfileResponse"
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+
+  # /investors/{investorId}/profile/audit:
+  #   get:
+  #     operationId: GetInvestorProfileAudit
+  #     description: Get the audit information from the investor
+  #     tags: ['investor']
+  #     parameters:
+  #       - $ref: '#/components/parameters/investorId'
+  #       - $ref: '#/components/parameters/fromDate'
+  #       - $ref: '#/components/parameters/toDate'
+  #       - $ref: '#/components/parameters/limit'
+  #       - $ref: '#/components/parameters/offset'
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/getInvestorProfileAuditResponse'
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  # /investors/{investorId}/notifications/emails:
+  #   get:      
+  #     operationId: GetInvestorEmailNotifications
+  #     summary: Get Investor Email Notifications
+  #     description: Get the notifications sent as emails to an investor given the investor id
+  #     tags: ['investor']
+  #     parameters:
+  #       - $ref: '#/components/parameters/investorId'
+  #       - $ref: '#/components/parameters/fromDate'
+  #       - $ref: '#/components/parameters/toDate'
+  #       - in: query
+  #         name: orderBy
+  #         required: false
+  #         schema:
+  #           type: string
+  #           enum:
+  #             - 'dateSent'
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/getInvestorNotitificationsEmailsResponse'
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  /investors/{investorId}/contacts:
+    get:
+      operationId: GetInvestorContacts
+      summary: Get Investor Contacts
+      description: Get the contacts associated to an investor given the investor id
+      tags: ['investor']
+      parameters:
+        - $ref: '#/components/parameters/investorId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getInvestorContactsResponse'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+
+###########################
+# CONTACT API 
+########################### 
+
+  # /contacts:
+  #   get:
+  #     operationId: GetContacts
+  #     summary: Get Contacts
+  #     description: Get the contacts linked to the API user
+  #     tags: ['contact']
+  #     parameters:
+  #       - $ref: '#/components/parameters/limit'
+  #       - $ref: '#/components/parameters/offset'
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/getContactsResponse'
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  /contacts/{contactId}:
+    get:
+      operationId: GetContact
+      summary: Get Contact
+      description: Get the contact details given a contact id
+      tags: ['contact']
+      parameters:
+        - in: path
+          name: contactId 
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getContactResponse'
+          links:
+              GetUserByUserId:
+                operationId: GetUser
+                parameters:
+                  userId: '$response.body#/data/user/id'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /contacts/{contactId}/profile:
+    get:
+      operationId: GetContactProfile
+      summary: Get Contact Profile
+      description: Get the contact profile given a contact id
+      tags: ['contact']
+      parameters:
+        - in: path
+          name: contactId 
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getContactProfileResponse'
+          links:
+              GetUserByUserId:
+                operationId: GetUser
+                parameters:
+                  userId: '$response.body#/data/user/id'
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+
+###########################
+# USER API
+###########################   
+
+  /users
+    get:
+      operationId: GetUsers
+      summary: Get Users
+      description: Get the users linked to the API user      
+      tags: ['user']
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getUsersResponse"
+        "401":
+          description: Authorization information is missing or invalid.
+                 
+  /users/{userId}:
+    get:
+      operationId: GetUser
+      summary: Get User
+      description: Get the user details given a user id
+      tags: ['user']
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        "200":
+          description: OK
+          content:
+           application/json:
+              schema:
+                $ref: "#/components/schemas/getUserResponse"
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+  /users/{userId}/activity:
+    get:
+      operationId: GetUserActivity
+      summary: Get User Activity
+      description: Get activity activity given a user id, ordered from most recent activity
+      tags: ['user']
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - in: query
+          name: type
+          description: One or more activity types
+          required: false
+          schema:
+            type: string
+            enum:
+            - login
+            - download
+      responses:
+        "200":
+          description: OK
+          content:
+           application/json:
+              schema:
+                $ref: "#/components/schemas/getUserActivitiesResponse"
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not found.
+
+
+  /status:
+    get:
+      operationId: GetStatus
+      summary: Get status
+      description: Get status
+      tags: ['internal']
+      responses:
+        "200":
+          description: OK
+          content:
+           application/json:
+            schema:
+              type: object
+
+
+  # /users/{userId}/relationships/:
+  #   get:
+  #     operationId: GetUserRelationships
+  #     summary: Get the relationships the user has with a specific role
+  #     description: Get information about the user
+  #     tags: ['user']
+  #     parameters:
+  #       - in: path
+  #         name: userId 
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #          application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/collectionMetadata'
+  #                 data: 
+  #                   type: array
+  #                   items:
+  #                     $ref: '#/components/schemas/userInfo'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+###########################
+# EMAIL API
+# NOTE: PHASE 2
+###########################   
+
+  # /emails/{emailId}:
+  #   get:
+  #     description: Get information from an email
+  #     operationId: "GetEmailInfo"
+  #     tags: ['email']
+  #     parameters:
+  #       - in: path
+  #         name: emailId 
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #          application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 metadata:
+  #                   $ref: '#/components/schemas/entityMetadata'
+  #                 data: 
+  #                   type: array
+  #                   items:
+  #                     $ref: '#/components/schemas/emailInfo'
+  #                 errors:
+  #                   type: object
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+  # /email/{emailId}/attachment/{attachmentId}:
+  #   get:
+  #     operationId: GetEmailAttachment
+  #     summary: Get Email Attachment
+  #     description: Get the attachment from an email
+  #     tags: ['email']
+  #     parameters:
+  #       - in: path
+  #         name: emailId 
+  #         required: true
+  #         schema:
+  #           type: string
+  #       - in: path
+  #         name: attachmentId 
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/octet-stream:
+  #             schema:
+  #               type: string
+  #               format: binary
+  #       "401":
+  #         description: Authorization information is missing or invalid.
+  #       "404":
+  #         description: Not found.
+
+###########################
+# DOCUMENT API
+# NOTE: PHASE 2
+###########################   
+
+  # /documents/{documentId}:
+  #   get:
+  #     description: Get a document
+  #     operationId: "GetDocument"
+  #     tags: ['document']
+  #     parameters:
+  #       - in: path
+  #         name: documentId 
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: Successful response
+  #         content:
+  #           application/octet-stream:
+  #             schema:
+  #               type: string
+  #               format: binary
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oAuth2ClientCredentials:
+      type: oauth2
+      description: OAuth2 Client Credentials Flow
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.eu.alterdomus.com/corpro/token
+          scopes: {}
+  schemas:
+
+###########################
+# METADATA
+###########################  
+
+    baseMetadata:
+      type: object
+      additionalProperties: false
+      properties:
+        instance: 
+          type: string
+        responseType:
+          type: string
+          enum:
+              - 'entity'
+              - 'entity-sub-resource'
+              - 'collection'
+          nullable: true        
+
+    entityMetadata:
+      allOf:
+        - $ref: '#/components/schemas/baseMetadata'
+      type: object
+      additionalProperties: false
+      properties:
+        entityType:
+          type: string
+          nullable: false
+        entityId: 
+          type: string
+          nullable: false
+
+    entitySubResourceMetadata:
+      allOf:
+        - $ref: '#/components/schemas/baseMetadata'
+      type: object
+      additionalProperties: false
+      properties:
+        entityType:
+          type: string
+          nullable: false
+        entityPath:
+          type: string
+          nullable: false
+        entityId: 
+          type: string
+          nullable: false
+
+    collectionMetadata:
+      allOf:
+        - $ref: '#/components/schemas/baseMetadata'
+      type: object
+      additionalProperties: false
+      properties:
+        totalCount:
+          type: integer
+          description: Returns the total items matching a collection query. This value may not be returned.
+          nullable: true
+        count:
+          type: integer
+          nullable: false
+          description: The amount of items returned in the collection query.
+        limit:
+          type: integer
+          nullable: false
+          description: The maximum items of returned for the collection query as applied by server.
+        offset:
+          type: integer
+          nullable: false
+          description: The result offset for the collection query. Zero based.
+
+###########################
+# HEADERS
+########################### 
+
+    fundHeader:    
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        # FUTURE: current NAV
+        # FUTURE: NAV modified NAV        
+
+    investorHeader:
+      type: object
+      additionalProperties: false
+      properties:
+        id:          
+          type: string
+        name: 
+          type: string
+        fund:
+          $ref: '#/components/schemas/fundHeader'
+        alternativeId:
+          type: string
+          description: An alternative investor identifier provided to Alter Domus
+
+    contactHeader:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        userName:
+          type: string
+        investor:
+          $ref: '#/components/schemas/investorHeader'
+
+    userHeader:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        userName:
+          type: string
+          format: email
+          nullable: true
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+
+    emailHeader:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+
+    userActivityHeader:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date-time
+        activity:
+          $ref: '#/components/schemas/userActivityType'
+        user:
+          $ref: '#/components/schemas/userHeader'
+
+###########################
+# RESPONSE
+########################### 
+
+   
+    getFundsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/fundHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getFundResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entityMetadata'
+        data: 
+          $ref: '#/components/schemas/fundSummary'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getFundProfileResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entityMetadata'
+        data: 
+          $ref: '#/components/schemas/fundProfile'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/investorHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entityMetadata'
+        data: 
+          $ref: '#/components/schemas/investorSummary'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorProfileResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entitySubResourceMetadata'
+        data: 
+          $ref: '#/components/schemas/investorProfile'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorProfileAuditResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          $ref: '#/components/schemas/investorAuditCollection'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getUsersResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/userHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getUserResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entityMetadata'
+        data: 
+          $ref: '#/components/schemas/userSummary'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorNotitificationsEmailsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/emailHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getFundBalanceResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entitySubResourceMetadata'
+        data: 
+          $ref: '#/components/schemas/fundBalanceSummary'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getContactsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/contactHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getContactResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:          
+          $ref: '#/components/schemas/entityMetadata'
+        data: 
+          $ref: '#/components/schemas/contactSummary'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+  
+    getContactProfileResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entityMetadata'
+        data: 
+          $ref: '#/components/schemas/contactProfileSummary'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getFundInvestorsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/investorHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getUserActivitiesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/userActivityHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorBalanceResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/entitySubResourceMetadata'
+        data: 
+          $ref: '#/components/schemas/investorBalanceSummary'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorAuditHistoryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          $ref: '#/components/schemas/investorAuditCollection'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+    getInvestorContactsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        metadata:
+          $ref: '#/components/schemas/collectionMetadata'
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/contactHeader'
+        error:
+          $ref: '#/components/schemas/errorSummary'
+
+###########################
+# OTHERS
+########################### 
+
+    userSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        user:
+          $ref: '#/components/schemas/userHeader'
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/labeledEmailAddress'
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/postalAddress'
+          nullable: true
+        lastLoginDate:
+          type: string
+          format: date-time
+          nullable: true 
+
+    userActivityType:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+            - login
+            - download  
+
+    emailInfo: 
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          $ref: '#/components/schemas/emailHeader'
+        dateSent:
+          type: string
+          format: date-time
+        from:
+          $ref: '#/components/schemas/emailAddress'
+        to:
+          type: array
+          items:
+            $ref: '#/components/schemas/emailAddress'
+        cc:
+          type: array
+          items:
+            $ref: '#/components/schemas/emailAddress'
+        bcc:
+          type: array
+          items:
+            $ref: '#/components/schemas/emailAddress'
+        subject:
+          type: string
+        body:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              mime-type:
+                type: string
+                example: application/pdf
+
+    auditBase:
+      type: object
+      additionalProperties: false
+      properties:
+        date:
+          type: string
+          format: date-time
+        id:
+          type: string
+          nullable: true
+          description: The unique identifier related to this audit
+        changedBy:
+          type: string
+          nullable: true
+        # FUTURE
+        # changeReason:
+        #   type: string
+        #   nullable: true
+
+    fieldAudit:
+       allOf:
+        - $ref: '#/components/schemas/auditBase'
+       type: object
+       additionalProperties: false
+       properties:
+        fieldUpdated:
+          type: string
+        originalValue:
+          type: string
+        newValue:
+          type: string
+
+    investorAuditCollection:
+      type: object
+      additionalProperties: false
+      properties:
+        investor:
+          $ref: '#/components/schemas/investorHeader'
+        audits:
+          type: array
+          items:
+            $ref: '#/components/schemas/fieldAudit' 
+
+    investorProfile:
+      type: object
+      additionalProperties: false
+      properties:
+        summary:
+          $ref: '#/components/schemas/investorSummary'
+        banking:
+          $ref: '#/components/schemas/bankingSummary'
+        compliance:
+          $ref: '#/components/schemas/complianceInfo'
+        tax:
+          $ref: '#/components/schemas/taxInfo'
+        distribution:
+          $ref: '#/components/schemas/distributionInfo'
+        primaryContact:          
+          $ref: '#/components/schemas/personInfo'
+        investmentAdvisor:
+          $ref: '#/components/schemas/personInfo'
+        authorizedSigner:
+          $ref: '#/components/schemas/personInfo'
+
+    complianceInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        onboardingStatus:
+          type: string
+          enum:
+            - NotStarted
+            - Started
+            - Completed
+          description: Current status of the onboarding process for the investor
+       # FUTURE
+       # onboardingStatusModifiedDate:
+       #   type: string
+       #   format: date-time  
+       #   description: The date the current status was set
+
+    taxInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        TaxIdentifier: 
+            type: string
+
+    distributionInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        election: 
+            type: string
+        method: 
+            type: string
+
+    personInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        fullName: 
+          type: string
+
+    communicationPreferencesInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        sendDocumentsAsAttachments:
+          type: boolean
+        notificationEmailAddress:
+          $ref: '#/components/schemas/notificationEmailAddress'
+
+    investorPermissionsInfo:
+      type: object
+      additionalProperties: false
+      properties:
+       documentFolderPermissions:
+          $ref: '#/components/schemas/investorDocumentFolderPermissionsInfo'
+             
+    investorDocumentFolderPermissionsInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/investorFolderDocumentPermissionInfo'
+
+    documentFolderInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        name: 
+          type: string
+          description: "The name of the folder."
+
+    investorFolderDocumentPermissionInfo:
+      allOf:
+        - $ref: '#/components/schemas/documentFolderInfo'
+      type: object
+      additionalProperties: false
+      properties:
+        notifyOnDocumentChanges:
+          type: boolean
+
+    investorSummary:
+      allOf:
+        - $ref: '#/components/schemas/investorHeader'
+      type: object
+      additionalProperties: false
+      properties:
+        investorType:
+          type: string
+          description: The type of investor
+          nullable: true
+        investorStatus:
+          type: string
+          description: The current status of the investor account.
+          example: "Possible values are: Active, Pending (compliance ongoing), Redeemed, Transferred"
+        # FUTURE
+        # statusModifiedDate:
+        #   type: string
+        #   format: date-time  
+        #   description: The date the current status was set
+        balance:
+          $ref: '#/components/schemas/investorBalanceSummary'
+
+    fundSummary:
+      allOf:
+        - $ref: '#/components/schemas/fundHeader'
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        fundType:
+          type: string
+          nullable: true
+        #entityType:
+        #  type: string
+        #  nullable: true
+        balance:
+          $ref: "#/components/schemas/fundBalanceSummary"
+        parentFund: 
+          $ref: "#/components/schemas/fundHeader"
+
+    fundProfile:
+      type: object
+      additionalProperties: false
+      properties:
+        summary:
+          $ref: '#/components/schemas/fundSummary'
+        segment:
+          type: string
+          nullable: true
+        strategy:
+          type: string
+          nullable: true
+        openEndedOrClosedEnded:
+          type: string
+          example: "Valid values are: Open Ended, Closed Ended, Separate/Single Client, Not Applicable"
+          nullable: true
+
+    bankingSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        bankAccounts:
+          type: array
+          items:
+             $ref: '#/components/schemas/bankAccount'
+
+    bankAccount:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+        accountName:
+          type: string
+        accountNumber:
+          type: string
+        aba:
+          type: string
+        swift:
+          type: string
+        iban:
+          type: string
+        furtherCredit:
+          type: string
+        description:
+          type: string
+        other:
+          type: string
+
+    bank:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+            type: string
+        address:
+          $ref: '#/components/schemas/postalAddress'
+
+    contactSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        contact:  
+          $ref: '#/components/schemas/contactHeader'
+        user:
+          $ref: '#/components/schemas/userHeader'        
+        # FUTURE
+        # enabledModifiedDate:
+        #   type: string
+        #   format: date-time
+        #   nullable: true
+        #   description: The date the current Enabled status was set
+
+    contactProfileSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        summary:
+          $ref: '#/components/schemas/contactSummary'
+        isAuthorizedResponder:
+          type: boolean
+        communicationPreferences:
+          $ref: '#/components/schemas/communicationPreferencesInfo'
+        investorPermissions:
+          $ref: '#/components/schemas/investorPermissionsInfo'
+
+    fundBalanceSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        fund:
+          $ref: '#/components/schemas/fundHeader'
+        currency:
+          type: string
+          nullable: true
+        netAssetValue:
+          type: number
+          nullable: true
+        commitmentAmount:
+          type: number
+          nullable: true
+        outstandingAmount:
+          type: number
+          nullable: true
+        modifiedDate:
+          type: string
+          format: date-time
+          nullable: true
+        asOfDate:
+          type: string
+          format: date-time
+          nullable: true
+
+    investorBalanceSummary:
+      type: object
+      additionalProperties: false
+      description: An Investor account balance
+      properties:
+        investor:
+          $ref: '#/components/schemas/investorHeader'
+        currency:
+          type: string 
+          nullable: true
+        netAssetValue:
+          type: number
+          nullable: true
+        commitmentAmount:
+          type: number
+          nullable: true
+        outstandingAmount:
+          type: number
+          nullable: true
+        modifiedDate:
+          type: string
+          format: date-time
+          nullable: true
+        asOfDate:
+          type: string
+          format: date-time
+          nullable: true
+
+    postalAddress:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          nullable: true
+        streetAddress:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        stateProvinceRegion:
+          type: string
+          nullable: true
+        postCode:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+
+    emailAddress:
+      type: object
+      additionalProperties: false
+      properties:                   
+        email:
+          type: string
+          format: email    
+
+    labeledEmailAddress:
+      allOf:
+        - $ref: '#/components/schemas/emailAddress'
+      type: object
+      additionalProperties: false
+      properties:
+        labels:
+          type: array
+          items: 
+            type: object
+            additionalProperties: false
+            properties:
+              key: 
+                type: string                    
+              value: 
+                type: string    
+
+    notificationEmailAddress:
+      allOf:
+        - $ref: '#/components/schemas/emailAddress'
+      type: object
+      additionalProperties: false
+      properties:
+        forwardingType:            
+          $ref: '#/components/schemas/emailForwardType'           
+
+    emailForwardType:
+      type: object
+      nullable: true
+      additionalProperties: false      
+      properties:
+        type:
+          type: string
+          enum:
+            - TO
+            - CC
+            - BCC
+
+    documentHeader:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        id:
+          type: string  
+
+
+    errorSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        target:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+              target:
+                type: string   
+
+
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: "Limit"
+      schema:
+        type: integer
+        nullable: true
+    offset:
+      name: offset
+      in: query
+      description: "Offset"
+      schema:
+        type: integer
+        nullable: true
+    asOfDate:
+      name: asOfDate
+      in: query
+      description: "AsOfDate"
+      schema:
+        type: string
+        format: date-time        
+    fromDate:
+      name: fromDate
+      in: query
+      description: "FromDate"
+      schema:
+        type: string
+        format: date-time
+    toDate:
+      name: toDate
+      in: query
+      description: "ToDate"
+      schema:
+        type: string
+        format: date-time
+    fundId:
+      name: fundId
+      in: path
+      required: true
+      description: "Fund Id"
+      schema:
+        type: string
+        nullable: false
+    contactId:
+      name: contactId
+      in: path
+      required: true
+      description: "Contact Id"
+      schema:
+        type: string
+        nullable: false
+    userId:
+      name: userId
+      in: path
+      required: true
+      description: "User Id"
+      schema:
+        type: string
+        nullable: false
+    investorId:
+      name: investorId
+      in: path
+      required: true
+      description: "Investor Id"
+      schema:
+        type: string
+        nullable: false
+    orderBy:
+      name: orderBy
+      in: query      
+      description: "Order By"
+      schema:
+        type: string
+        nullable: true
